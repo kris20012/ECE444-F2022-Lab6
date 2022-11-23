@@ -36,21 +36,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@app.route('/delete/<int:post_id>', methods=['GET'])
-@login_required
-def delete_entry(post_id):
-    """Deletes post from database."""
-    result = {'status': 0, 'message': 'Error'}
-    try:
-        new_id = post_id
-        db.session.query(models.Post).filter_by(id=new_id).delete()
-        db.session.commit()
-        result = {'status': 1, 'message': "Post Deleted"}
-        flash('The entry was deleted.')
-    except Exception as e:
-        result = {'status': 0, 'message': repr(e)}
-    return jsonify(result)
-
 @app.route('/')
 def index():
     """Searches the database for entries, then displays them."""
@@ -94,11 +79,13 @@ def logout():
 
 
 @app.route('/delete/<int:post_id>', methods=['GET'])
+@login_required
 def delete_entry(post_id):
     """Deletes post from database."""
     result = {'status': 0, 'message': 'Error'}
     try:
-        db.session.query(models.Post).filter_by(id=post_id).delete()
+        new_id = post_id
+        db.session.query(models.Post).filter_by(id=new_id).delete()
         db.session.commit()
         result = {'status': 1, 'message': "Post Deleted"}
         flash('The entry was deleted.')
